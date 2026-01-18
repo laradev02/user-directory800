@@ -18,13 +18,6 @@
     </div>
   </div>
 
-  <!-- Loading Bar -->
-  <mat-progress-bar
-    *ngIf="loading$ | async"
-    class="loading-bar"
-    mode="indeterminate">
-  </mat-progress-bar>
-
   <!-- Loading State with Skeleton Loaders -->
   <div class="users-grid" *ngIf="loading$ | async">
     <app-skeleton-card *ngFor="let item of [1,2,3,4,5,6]"></app-skeleton-card>
@@ -85,7 +78,7 @@
   </div>
 
   <!-- Empty State -->
-  <div class="empty-state" *ngIf="!(loading$ | async) && !(displayedUsers$ | async)?.length">
+  <div class="empty-state" *ngIf="shouldShowEmptyState$ | async">
     <div class="empty-icon">
       <mat-icon fontSet="material-symbols-outlined">people_outline</mat-icon>
     </div>

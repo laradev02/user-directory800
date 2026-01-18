@@ -8,7 +8,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { User } from '../../core/models/user.model';
 import { SkeletonCardComponent } from '../../components/skeleton-card/skeleton-card.component';
 import { LazyImageDirective } from '../../core/directives/lazy-image.directive';
@@ -26,7 +25,6 @@ import * as fromUsers from '../../store/users/users.selectors';
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressBarModule,
     SkeletonCardComponent,
     LazyImageDirective
   ],
@@ -40,6 +38,7 @@ export class UsersListComponent implements OnInit {
   totalUsers$: Observable<number>;
   pageSize$: Observable<number>;
   loading$: Observable<boolean>;
+  shouldShowEmptyState$: Observable<boolean>;
   currentPage = 0;
   private page$ = new BehaviorSubject<number>(1);
 
@@ -81,6 +80,36 @@ export class UsersListComponent implements OnInit {
 
             return this.usersService.searchUserById(id).pipe(
               map(foundUser => (foundUser ? [foundUser] : []))
+            );
+          })
+        );
+      })
+    );
+
+    // Only show empty state if not loading, no displayed users, and truly no data
+    this.shouldShowEmptyState$ = this.loading$.pipe(
+      switchMap(loading => {
+        if (loading) return of(false);
+        
+        return this.displayedUsers$.pipe(
+          switchMap(displayedUsers => {
+            if (displayedUsers && displayedUsers.length > 0) {
+              return of(false);
+            }
+            
+            // Check if it's a search query
+            return this.isFilterActive$.pipe(
+              switchMap(isSearch => {
+                if (isSearch) {
+                  // For search, show empty if no results
+                  return of(true);
+                }
+                
+                // For non-search, check if store has any data
+                return this.store.select(fromUsers.selectAllUsers).pipe(
+                  map(allUsers => allUsers.length === 0)
+                );
+              })
             );
           })
         );
