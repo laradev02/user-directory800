@@ -2,6 +2,15 @@
 
 Angular application for managing and viewing user profiles with search functionality.
 
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/laradev02/user-directory800.git
+cd user-directory800
+```
+
 ## Quick Start
 
 ```bash
