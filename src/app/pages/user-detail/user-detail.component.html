@@ -1,0 +1,183 @@
+<div class="user-detail-container">
+  <div class="detail-nav">
+    <div class="nav-left">
+      <button class="back-link" (click)="goBack()">
+        <mat-icon fontSet="material-symbols-outlined">arrow_back</mat-icon>
+        <span>Back to Directory</span>
+      </button>
+      <nav class="breadcrumb">
+        <span>Home</span>
+        <mat-icon fontSet="material-symbols-outlined">chevron_right</mat-icon>
+        <span class="breadcrumb-active" *ngIf="user$ | async as user">{{ user.first_name }} {{ user.last_name }}</span>
+      </nav>
+    </div>
+    <div class="nav-right" *ngIf="user$ | async as user">
+      <span class="profile-id">Profile ID: {{ user.id }}</span>
+    </div>
+  </div>
+
+  <!-- Loading State with Skeleton -->
+  <div *ngIf="loading$ | async" class="detail-card-wrapper">
+    <app-skeleton-detail></app-skeleton-detail>
+  </div>
+
+  <!-- User Detail -->
+  <div *ngIf="!(loading$ | async) && (user$ | async) as user" class="detail-card-wrapper">
+    <mat-card class="user-detail-card">
+      <div class="card-gradient"></div>
+      <div class="detail-content">
+        <div class="avatar-section">
+          <div class="avatar-glow"></div>
+          <div class="avatar-border">
+            <div class="avatar-inner">
+              <img
+                [appLazyImage]="user.avatar"
+                [fallback]="getFallbackAvatar(user.first_name + ' ' + user.last_name, 2048)"
+                [eager]="true"
+                [fetchPriority]="'high'"
+                [decoding]="'async'"
+                [alt]="user.first_name + ' ' + user.last_name"
+                (error)="onImageError($event)"
+                class="user-avatar"
+                width="224"
+                height="224">
+            </div>
+          </div>
+          <div class="status-badge">Active Status</div>
+        </div>
+
+        <div class="info-section">
+          <div class="name-section">
+            <h1 class="user-full-name">
+              {{ user.first_name }} <span class="accent">{{ user.last_name }}</span>
+            </h1>
+            <div class="role-badges">
+              <div class="role-badge">
+                <mat-icon fontSet="material-symbols-outlined">work</mat-icon>
+                <span>Chief Operational Officer</span>
+              </div>
+              <div class="role-badge">
+                <mat-icon fontSet="material-symbols-outlined">location_on</mat-icon>
+                <span>Irvine Corporate Center</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="info-item">
+              <div class="info-icon">
+                <mat-icon fontSet="material-symbols-outlined">mail</mat-icon>
+              </div>
+              <div class="info-content">
+                <label class="info-label">Communication</label>
+                <a class="info-value" [href]="'mailto:' + user.email">{{ user.email }}</a>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">
+                <mat-icon fontSet="material-symbols-outlined">verified</mat-icon>
+              </div>
+              <div class="info-content">
+                <label class="info-label">Verification Identity</label>
+                <span class="info-value">{{ user.id }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button mat-raised-button color="primary" class="primary-btn" (click)="sendEmail(user.email)">
+              <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
+              Edit Profile
+            </button>
+            <button mat-stroked-button class="secondary-btn">
+              <mat-icon fontSet="material-symbols-outlined">download</mat-icon>
+              Documents
+            </button>
+            <button mat-stroked-button class="danger-btn">
+              <mat-icon fontSet="material-symbols-outlined">block</mat-icon>
+              Restrict
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <div class="stats-grid" *ngIf="!(loading$ | async) && (user$ | async)">
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-label">Account Security</span>
+        <span class="stat-value">94%</span>
+      </div>
+      <div class="stat-progress">
+        <div class="stat-progress-bar" style="width: 94%"></div>
+      </div>
+      <div class="stat-footer">
+        <mat-icon fontSet="material-symbols-outlined">check_circle</mat-icon>
+        <span>Multi-factor enabled</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-label">Team Activity</span>
+        <span class="stat-value">18 Reports</span>
+      </div>
+      <div class="stat-progress">
+        <div class="stat-progress-bar" style="width: 72%"></div>
+      </div>
+      <div class="stat-footer">
+        <mat-icon fontSet="material-symbols-outlined">trending_up</mat-icon>
+        <span>Above average pace</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-label">System Caching</span>
+        <span class="stat-value">SYNCED</span>
+      </div>
+      <div class="stat-progress">
+        <div class="stat-progress-bar" style="width: 100%"></div>
+      </div>
+      <div class="stat-footer">
+        <mat-icon fontSet="material-symbols-outlined">history</mat-icon>
+        <span>Last Sync: Today 10:45 AM</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connection-status" *ngIf="!(loading$ | async)">
+    <div class="status-left">
+      <div class="pulse-dot"></div>
+      <span>Real-time connection active</span>
+    </div>
+    <div class="status-right">
+      <span>API Latency: 24ms</span>
+      <span class="version">Version 4.2.0-Emerald</span>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!(loading$ | async) && !(user$ | async) && !(error$ | async)" class="empty-state">
+    <div class="empty-icon">
+      <mat-icon fontSet="material-symbols-outlined">person_off</mat-icon>
+    </div>
+    <h3 class="empty-title">User Not Available</h3>
+    <p class="empty-message">Unable to load user information at this time.</p>
+    <button mat-raised-button color="primary" class="empty-action" (click)="goBack()">
+      <mat-icon fontSet="material-symbols-outlined">arrow_back</mat-icon>
+      Back to Directory
+    </button>
+  </div>
+
+  <div *ngIf="error$ | async" class="error-container">
+    <mat-card class="error-card">
+      <mat-icon class="error-icon" fontSet="material-symbols-outlined">error</mat-icon>
+      <h2>User Not Found</h2>
+      <p>Sorry, we couldn't find the user you're looking for.</p>
+      <button mat-raised-button color="primary" (click)="goBack()">
+        <mat-icon fontSet="material-symbols-outlined">arrow_back</mat-icon>
+        Back to Users
+      </button>
+    </mat-card>
+  </div>
+</div>

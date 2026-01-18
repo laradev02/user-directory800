@@ -1,0 +1,113 @@
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+$emerald-primary: #10b981;
+$emerald-dark: #059669;
+
+.mat-primary {
+  --mdc-theme-primary: #{$emerald-primary};
+}
+
+.mat-mdc-raised-button.mat-primary {
+  background-color: $emerald-primary !important;
+  color: white !important;
+  border-radius: 0.75rem !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2) !important;
+  transition: all 0.3s ease !important;
+
+  &:hover {
+    background-color: $emerald-dark !important;
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3) !important;
+  }
+
+  &:not(:disabled) {
+    background-color: $emerald-primary !important;
+  }
+}
+
+:root {
+  --emerald-primary: #10b981;
+  --emerald-dark: #059669;
+  --emerald-light: #d1fae5;
+  --background: #ffffff;
+  --surface: #f9fafb;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --border-light: #e5e7eb;
+  --border-emerald: rgba(16, 185, 129, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--background);
+  color: var(--text-main);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--emerald-primary);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Material overrides */
+.mat-mdc-card {
+  border-radius: 1rem !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+.mat-mdc-button, .mat-mdc-raised-button {
+  border-radius: 0.75rem !important;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}

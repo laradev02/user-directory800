@@ -1,0 +1,109 @@
+<div class="users-container">
+  <div class="page-header">
+    <div class="header-left">
+      <h2 class="page-title">Active Directory</h2>
+      <p class="page-subtitle">
+        Accessing <span class="highlight">{{ (totalUsers$ | async) || 0 }}</span> verified profiles across the network.
+      </p>
+    </div>
+    <div class="header-right" *ngIf="!(loading$ | async) && (displayedUsers$ | async)?.length && !(isFilterActive$ | async)">
+      <mat-paginator
+        [length]="(totalUsers$ | async) || 0"
+        [pageSize]="(pageSize$ | async) || 6"
+        [pageIndex]="currentPage"
+        [pageSizeOptions]="[6]"
+        (page)="onPageChange($event)"
+        hidePageSize>
+      </mat-paginator>
+    </div>
+  </div>
+
+  <!-- Loading Bar -->
+  <mat-progress-bar
+    *ngIf="loading$ | async"
+    class="loading-bar"
+    mode="indeterminate">
+  </mat-progress-bar>
+
+  <!-- Loading State with Skeleton Loaders -->
+  <div class="users-grid" *ngIf="loading$ | async">
+    <app-skeleton-card *ngFor="let item of [1,2,3,4,5,6]"></app-skeleton-card>
+  </div>
+
+  <!-- Users List -->
+  <div class="users-grid" *ngIf="!(loading$ | async) && (displayedUsers$ | async)?.length">
+    <mat-card
+      *ngFor="let user of (displayedUsers$ | async); let i = index"
+      class="user-card"
+      [style.animation-delay]="getCardDelay(i)"
+      (click)="viewUserDetail(user.id)">
+      <div class="card-top-actions">
+        <button class="icon-action" (click)="viewUserDetail(user.id); $event.stopPropagation()">
+          <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
+        </button>
+      </div>
+      <div class="avatar-wrapper">
+        <div class="avatar-ring">
+          <img
+            [appLazyImage]="user.avatar"
+            [fallback]="getFallbackAvatar(user.first_name + ' ' + user.last_name, 256)"
+            [alt]="user.first_name + ' ' + user.last_name"
+            (error)="onImageError($event)"
+            class="user-avatar"
+            width="96"
+            height="96">
+        </div>
+        <div class="status-dot">
+          <mat-icon fontSet="material-symbols-outlined">check</mat-icon>
+        </div>
+      </div>
+
+      <mat-card-content class="card-content">
+        <h3 class="user-name">{{ user.first_name }} {{ user.last_name }}</h3>
+        <p class="user-role">Team Member</p>
+        <div class="user-id-pill">
+          <span class="pill-label">ID:</span>
+          <span class="pill-value">{{ user.id }}</span>
+        </div>
+      </mat-card-content>
+
+      <div class="card-footer">
+        <button class="icon-action" (click)="$event.stopPropagation()">
+          <mat-icon fontSet="material-symbols-outlined">folder_shared</mat-icon>
+          <span>Files</span>
+        </button>
+        <button class="icon-action" (click)="$event.stopPropagation()">
+          <mat-icon fontSet="material-symbols-outlined">key</mat-icon>
+          <span>Access</span>
+        </button>
+        <button class="icon-action" (click)="$event.stopPropagation()">
+          <mat-icon fontSet="material-symbols-outlined">history</mat-icon>
+          <span>Audit</span>
+        </button>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!(loading$ | async) && !(displayedUsers$ | async)?.length">
+    <div class="empty-icon">
+      <mat-icon fontSet="material-symbols-outlined">people_outline</mat-icon>
+    </div>
+    <h3 class="empty-title">
+      {{ (isFilterActive$ | async) ? 'No Results Found' : 'No Users Found' }}
+    </h3>
+    <p class="empty-message">
+      {{ (isFilterActive$ | async) ? 'No users match that ID. Try another one.' : 'There are no users to display at this time.' }}
+    </p>
+    <button
+      mat-raised-button
+      color="primary"
+      class="empty-action"
+      (click)="loadUsers(1)"
+      *ngIf="!(isFilterActive$ | async)">
+      <mat-icon fontSet="material-symbols-outlined">refresh</mat-icon>
+      Refresh
+    </button>
+  </div>
+
+</div>

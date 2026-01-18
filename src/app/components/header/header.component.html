@@ -1,0 +1,102 @@
+<mat-toolbar class="header">
+  <div class="header-content">
+    <div class="logo-section" (click)="router.navigate(['/users'])">
+      <div class="logo-badge">
+        <mat-icon fontSet="material-symbols-outlined" class="logo-icon">shield_with_heart</mat-icon>
+      </div>
+      <div class="logo-text">
+        <span class="app-title">USER DIRECTORY</span>
+        <span class="app-subtitle">Emerald Tier Access</span>
+      </div>
+    </div>
+
+    <div class="search-section" *ngIf="!isUserDetailPage">
+      <div class="search-wrapper">
+        <mat-form-field class="search-field" appearance="outline">
+          <input
+            matInput
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="onSearchChange()"
+            (focus)="onSearchFocus()"
+            (blur)="onSearchBlur()"
+            placeholder="Search by User ID..."
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            autocomplete="off">
+          <mat-icon matPrefix fontSet="material-symbols-outlined" class="search-icon">search</mat-icon>
+          <button
+            mat-icon-button
+            matSuffix
+            *ngIf="searchQuery && !isSearching"
+            (click)="clearSearch(); $event.stopPropagation()"
+            class="clear-btn"
+            aria-label="Clear search">
+            <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
+          </button>
+          <mat-spinner
+            *ngIf="isSearching"
+            matSuffix
+            diameter="20"
+            class="search-spinner">
+          </mat-spinner>
+        </mat-form-field>
+      </div>
+
+      <!-- Search Result Dropdown -->
+      <div class="search-results" *ngIf="showSearchResults">
+        <!-- Loading State -->
+        <div class="search-loading" *ngIf="isSearching">
+          <mat-spinner diameter="24"></mat-spinner>
+          <span>Searching...</span>
+        </div>
+
+        <!-- Multiple Results -->
+        <div class="search-results-list" *ngIf="!isSearching && (filteredUsers$ | async) as users">
+          <div 
+            class="search-result-item" 
+            *ngFor="let user of users"
+            (click)="navigateToUser(user)"
+            (mousedown)="$event.preventDefault()">
+            <div class="result-avatar-wrapper">
+              <img
+                [appLazyImage]="user.avatar"
+                [fallback]="getFallbackAvatar(user.first_name + ' ' + user.last_name)"
+                [alt]="user.first_name + ' ' + user.last_name"
+                (error)="onImageError($event)"
+                class="result-avatar">
+              <div class="result-status-badge">
+                <mat-icon fontSet="material-symbols-outlined">check_circle</mat-icon>
+              </div>
+            </div>
+            <div class="result-info">
+              <div class="result-name">{{ user.first_name }} {{ user.last_name }}</div>
+              <div class="result-email">{{ user.email }}</div>
+              <div class="result-id">ID: {{ user.id }}</div>
+            </div>
+            <mat-icon class="result-arrow" fontSet="material-symbols-outlined">arrow_forward</mat-icon>
+          </div>
+
+          <!-- No Results -->
+          <div class="search-error" *ngIf="users.length === 0 && searchError">
+            <mat-icon fontSet="material-symbols-outlined" class="error-icon">person_off</mat-icon>
+            <div class="error-content">
+              <div class="error-title">No Users Found</div>
+          <div class="error-message">No user found with ID: {{ searchQuery }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-status">
+      <div class="sync-status">
+        <span class="sync-text">SECURE SYNC</span>
+        <span class="sync-time">Node: Emerald-01</span>
+      </div>
+      <div class="admin-avatar" aria-label="Administrator profile">
+        <div class="admin-avatar-img"></div>
+      </div>
+    </div>
+  </div>
+</mat-toolbar>

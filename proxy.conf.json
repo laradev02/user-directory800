@@ -1,0 +1,11 @@
+{
+  "/api": {
+    "target": "https://reqres.in",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "headers": {
+      "Accept": "application/json"
+    }
+  }
+}
